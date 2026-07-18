@@ -16,10 +16,17 @@ export async function createService(sandboxId) {
             },
             ports: [
                 {
-                    port: 5173,
+                    port: 80,
                     targetPort: 5173,
                     name: "http" ,
                     protocol: "TCP"
+                } ,
+                {
+                    name: "agent-http" ,
+                    port: 3000 ,
+                    targetPort: 3000 ,
+                    protocol :  "TCP"
+
                 }
             ]
         }
