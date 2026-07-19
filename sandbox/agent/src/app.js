@@ -7,7 +7,7 @@ const WORK_DIR = '/workspace'
 const app = express();
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended : true}));
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -22,31 +22,31 @@ app.get('/', (req, res) => {
 
 app.get('/list-files', async (req, res) => {
     //this need to be codedoc
-   const listFiles = async (dir, baseDir) => {
-    const entries = await fs.promises.readdir(dir, {
-        withFileTypes: true,
-    });
+    const listFiles = async (dir, baseDir) => {
+        const entries = await fs.promises.readdir(dir, {
+            withFileTypes: true,
+        });
 
-    const files = [];
+        const files = [];
 
-    for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        const relativePath = path.relative(baseDir, fullPath);
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            const relativePath = path.relative(baseDir, fullPath);
 
-        if (entry.isDirectory()) {
-            if (
-                ["node_modules", ".git", "dist", ".next", "build"].includes(entry.name)
-            ) {
-                continue;
+            if (entry.isDirectory()) {
+                if (
+                    ["node_modules", ".git", "dist", ".next", "build"].includes(entry.name)
+                ) {
+                    continue;
+                }
+
+                files.push(...await listFiles(fullPath, baseDir));
+            } else {
+                files.push(relativePath);
             }
-
-            files.push(...await listFiles(fullPath, baseDir));
-        } else {
-            files.push(relativePath);
         }
-    }
 
-    return files;
+        return files;
     }
     try {
         const files = await listFiles(WORK_DIR, WORK_DIR);
@@ -72,20 +72,20 @@ app.get("/read-files", async (req, res) => {
     }
     const fileList = files.split(',');
     const results = await Promise.all(fileList.map(async (file) => {
-        const filePath = `${WORK_DIR}/${file}`;
+        const filePath = path.join(WORK_DIR, file);
         try {
             const content = await fs.promises.readFile(filePath, 'utf-8');
             return {
-                [filePath]: content
+                [filePath.replace(WORK_DIR, '')]: content
             }
         } catch (err) {
             return {
-                [filePath]: `Error reading file: ${err.message}`,
+                [filePath.replace(WORK_DIR, '')]: `Error reading file: ${err.message}`,
             }
         }
     }));
     return res.status(200).json({
-        message: "file contant",
+        message: "file content",
         files: results
     })
 })
@@ -106,51 +106,68 @@ app.patch('/update-files', async (req, res) => {
         const { file, content } = update;
         const filePath = path.join(WORK_DIR, file);
         try {
+            await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
             await fs.promises.writeFile(filePath, content, 'utf-8');
             return {
                 [filePath]: 'file updated successfully'
             }
         } catch (err) {
-            return { [filePath]: `Error updating file:${err.message}` }
+            return {
+                file,
+                status: "error",
+                message: err.message,
+            };
         }
     }));
     res.status(200).json({
         message: 'Files updated results',
-        results
+        results,
+        status : "success"
     })
 })
 
-app.post('/create-files', async (req, res) => {
+app.post("/create-files", async (req, res) => {
     const files = req.body.files;
+
     if (!files || !Array.isArray(files)) {
         return res.status(400).json({
-            message: 'Invalid request body. Expected a json object with a "files" property containing a array of file',
-            status: 'error'
-        })
+            message: 'Invalid request body. Expected a "files" array.',
+            status: "error",
+        });
     }
-const result = await Promise.all(
-    files.map(async (fileObj) => {
-        const { file, content } = fileObj;
-        const filePath = path.join(WORK_DIR, file);
 
-        try {
-            await fs.promises.writeFile(filePath, content, "utf-8");
+    const results = await Promise.all(
+        files.map(async ({ file, content }) => {
+            const filePath = path.join(WORK_DIR, file);
 
-            return {
-                [filePath]: "File created successfully",
-            };
-        } catch (err) {
-            return {
-                [filePath]: `Error creating file: ${err.message}`,
-            };
-        }
-    })
-);
- 
-res.status(200).json({
-    message : 'Files created successfully ' ,
-    result
-})
-})
+            try {
+                // Create parent directories
+                await fs.promises.mkdir(path.dirname(filePath), {
+                    recursive: true,
+                });
+
+                // Create the file
+                await fs.promises.writeFile(filePath, content, "utf-8");
+
+                return {
+                    file,
+                    status: "success",
+                    message: "File created successfully",
+                };
+            } catch (err) {
+                return {
+                    file,
+                    status: "error",
+                    message: err.message,
+                };
+            }
+        })
+    );
+
+    return res.status(200).json({
+        message: "Files created successfully",
+        results,
+    });
+});
 
 export default app;
