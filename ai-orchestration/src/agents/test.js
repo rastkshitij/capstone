@@ -1,12 +1,8 @@
-import axios from "axios";
+import dns from "node:dns";
 
-try {
-    const res = await axios.get(
-        "http://019f8a55-1389-70a7-be47-12766df3f166.agent.localhost/list-files"
-    );
+dns.setDefaultResultOrder("ipv4first");
 
-    console.log(res.data);
-} catch (err) {
-    console.log(err.code);
-    console.log(err.message);
-}
+dns.lookup("abc.localhost", (err, address) => {
+    console.log(err);
+    console.log(address);
+});
