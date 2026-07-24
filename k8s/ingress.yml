@@ -18,6 +18,16 @@ spec:
                 port:
                   number: 80
 
+    - http:
+        paths:
+          - path: /api/ai
+            pathType: Prefix
+            backend:
+              service:
+                name: ai-service
+                port:
+                  number: 80
+
     - host: "*.agent.localhost"
       http:
         paths:
@@ -39,3 +49,4 @@ spec:
                 name: router-service
                 port:
                   number: 80
+
