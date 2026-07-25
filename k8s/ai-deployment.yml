@@ -31,20 +31,20 @@ spec:
               memory: "250Mi"
 
           ports:
-            - containerPort: 5000
+            - containerPort: 3000
               name: ai-server-port
 
           livenessProbe:
             httpGet:
               path: /api/status/health
-              port: 5000
+              port: 3000
             initialDelaySeconds: 90
             timeoutSeconds: 10
 
           readinessProbe:
             httpGet:
               path: /api/status/health
-              port: 5000
+              port: 3000
             initialDelaySeconds: 30
             timeoutSeconds: 10
 
