@@ -13,7 +13,7 @@ export const listFiles = tool(
   "http://localhost/list-files",
   {
     headers: {
-      Host: "019f8eae-c484-7509-b720-71f4af37371e.agent.localhost"
+      Host: "019f9f2e-4109-71a6-92e3-a777149205b2.agent.localhost"
     }
   }
 );
@@ -43,7 +43,7 @@ export const readFiles = tool(
             "http://localhost/read-files?files=" + files.join(","),
             {
                 headers: {
-                    Host: "019f8eae-c484-7509-b720-71f4af37371e.agent.localhost"
+                    Host: "019f9f2e-4109-71a6-92e3-a777149205b2.agent.localhost"
                 }
             }
         );
@@ -77,7 +77,7 @@ export const updateFiles = tool(
   },
   {
     headers: {
-      Host: "019f8eae-c484-7509-b720-71f4af37371e.agent.localhost"
+      Host: "019f9f2e-4109-71a6-92e3-a777149205b2.agent.localhost"
     }
   }
 );

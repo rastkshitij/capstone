@@ -12,17 +12,8 @@ const model = new ChatMistralAI({
 const agent = createAgent({
     model,
     tools: [ listFiles, readFiles, updateFiles ],
+
 })
 
-const result = await agent.invoke({
-    messages: [
-        {
-            role: "user",
-            content: `
-Change the whole content of the website to a simple landing page of a e commerce website you can use image from unsplash
-`
-        }
-    ]
-});
+export default agent
 
-console.log(JSON.stringify(result, null, 2));

@@ -12,5 +12,10 @@ export default defineConfig({
       protocol: "ws",
       clientPort: 80,
     }
+  } ,
+  watch: {
+    usePolling : true,
+    interval: 300 ,
+    ignored: ['node_modules']
   }
 })

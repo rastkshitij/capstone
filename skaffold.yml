@@ -2,9 +2,9 @@ apiVersion: skaffold/v4beta13
 kind: Config
 
 build:
-  local:
-    push: false
-    useDockerCLI: true
+  tagPolicy:
+    sha256: {}
+      
 
   artifacts:
     - image: ai-orchestration
@@ -13,7 +13,7 @@ build:
         dockerfile: dockerfile
       sync:
         infer:
-          - "app/src"
+          - "**/*.js"
 
     - image: agent
       context: sandbox/agent
