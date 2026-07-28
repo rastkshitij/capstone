@@ -13,7 +13,7 @@ export const listFiles = tool(
   "http://localhost/list-files",
   {
     headers: {
-      Host: "019f9f2e-4109-71a6-92e3-a777149205b2.agent.localhost"
+      Host: "019fa8ad-d2db-7331-9929-fc138a867aa0.agent.localhost"
     }
   }
 );
@@ -42,12 +42,13 @@ export const readFiles = tool(
         const response = await axios.get(
             "http://localhost/read-files?files=" + files.join(","),
             {
+                 timeout: 10000,
                 headers: {
-                    Host: "019f9f2e-4109-71a6-92e3-a777149205b2.agent.localhost"
+                    Host: "019fa8ad-d2db-7331-9929-fc138a867aa0.agent.localhost"
                 }
             }
         );
-
+//clg 
         console.log("=================================")
         console.log("response from read files tool", response.data)
         console.log("=================================")
@@ -69,18 +70,19 @@ export const updateFiles = tool(
         console.log("=================================")
         console.log("using update files tool with files", files)
         console.log("=================================")
-
+console.log("updateFiles started");
         const response = await axios.patch(
   "http://localhost/update-files",
   {
     updates: files
   },
-  {
+  { 
     headers: {
-      Host: "019f9f2e-4109-71a6-92e3-a777149205b2.agent.localhost"
+      Host: "019fa8ad-d2db-7331-9929-fc138a867aa0.agent.localhost"
     }
   }
 );
+console.log("updateFiles completed")
         console.log("=================================")
         console.log("response from update files tool", response.data)
         console.log("=================================")

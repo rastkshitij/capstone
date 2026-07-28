@@ -4,7 +4,7 @@ import { listFiles, readFiles, updateFiles } from "./tools.js";
 import { createAgent } from "langchain";
 
 const model = new ChatMistralAI({
-    model: "mistral-medium-latest",
+    model: "mistral-small-latest",
     apiKey: process.env.MISTRALAI_API_KEY,
     "temperature": 0.7,
 })
