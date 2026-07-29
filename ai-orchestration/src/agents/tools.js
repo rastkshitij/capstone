@@ -9,19 +9,21 @@ export const listFiles = tool(
         console.log("using list files tool")
         console.log("=================================")
 
-     const response = await axios.get(
-  "http://localhost/list-files",
-  {
-    headers: {
-      Host: "019fa8ad-d2db-7331-9929-fc138a867aa0.agent.localhost"
-    }
-  }
-);
+        const response = await axios.get(
+            "http://localhost/list-files",
+            {
+                headers: {
+                    Host: "019fae67-44ab-7571-8937-2e16810a6287.agent.localhost"
+                }
+            }
+        );
 
 
         console.log("=================================")
-        console.log("response from list files tool", response.data)
+        console.log("response from list files tool")
+        console.dir(response.data, { depth: null });
         console.log("=================================")
+        console.log("Returning from listFiles");
 
         return JSON.stringify(response.data.files);
     },
@@ -42,16 +44,17 @@ export const readFiles = tool(
         const response = await axios.get(
             "http://localhost/read-files?files=" + files.join(","),
             {
-                 timeout: 10000,
+                timeout: 10000,
                 headers: {
-                    Host: "019fa8ad-d2db-7331-9929-fc138a867aa0.agent.localhost"
+                    Host: "019fae67-44ab-7571-8937-2e16810a6287.agent.localhost"
                 }
             }
         );
-//clg 
+        //clg 
         console.log("=================================")
         console.log("response from read files tool", response.data)
         console.log("=================================")
+        console.log("Returning from ReadFiles");
 
         return JSON.stringify(response.data);
     },
@@ -70,22 +73,24 @@ export const updateFiles = tool(
         console.log("=================================")
         console.log("using update files tool with files", files)
         console.log("=================================")
-console.log("updateFiles started");
+        console.log("updateFiles started");
         const response = await axios.patch(
-  "http://localhost/update-files",
-  {
-    updates: files
-  },
-  { 
-    headers: {
-      Host: "019fa8ad-d2db-7331-9929-fc138a867aa0.agent.localhost"
-    }
-  }
-);
-console.log("updateFiles completed")
+            "http://localhost/update-files",
+            {
+                updates: files
+            },
+            {
+                headers: {
+                    Host: "019fae67-44ab-7571-8937-2e16810a6287.agent.localhost"
+                }
+            }
+        );
+        console.log("updateFiles completed")
         console.log("=================================")
         console.log("response from update files tool", response.data)
         console.log("=================================")
+
+        console.log("Returning from updateFiles");
 
         return JSON.stringify(response.data.results);
     },

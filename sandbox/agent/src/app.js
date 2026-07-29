@@ -22,6 +22,7 @@ app.get('/', (req, res) => {
 
 app.get('/list-files', async (req, res) => {
     //this need to be codedoc
+    console.log("WORK_DIR =", WORK_DIR);
     const listFiles = async (dir, baseDir) => {
         const entries = await fs.promises.readdir(dir, {
             withFileTypes: true,
@@ -92,6 +93,7 @@ app.get("/read-files", async (req, res) => {
 
 // pathch api for updating files content of the files
 app.patch('/update-files', async (req, res) => {
+     console.log("===== UPDATE FILES CALLED =====");
     const updates = req.body.updates;
     if (!updates || !Array.isArray(updates)) {
         return res.status(400).json(
