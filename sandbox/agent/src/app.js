@@ -18,8 +18,6 @@ app.get('/', (req, res) => {
 
 
 //this api list files 
-
-
 app.get('/list-files', async (req, res) => {
     //this need to be codedoc
     console.log("WORK_DIR =", WORK_DIR);
@@ -58,9 +56,9 @@ app.get('/list-files', async (req, res) => {
     } catch (err) {
         console.log(`the error is in the file reading is ${err}`)
     }
-})
+});
 
-
+//this api read-files
 app.get("/read-files", async (req, res) => {
     const files = req.query.files;
     if (!files) {
@@ -89,9 +87,9 @@ app.get("/read-files", async (req, res) => {
         message: "file content",
         files: results
     })
-})
+});
 
-// pathch api for updating files content of the files
+// patch api for updating files content of the files
 app.patch('/update-files', async (req, res) => {
      console.log("===== UPDATE FILES CALLED =====");
     const updates = req.body.updates;
@@ -126,8 +124,9 @@ app.patch('/update-files', async (req, res) => {
         results,
         status : "success"
     })
-})
+});
 
+//
 app.post("/create-files", async (req, res) => {
     const files = req.body.files;
 

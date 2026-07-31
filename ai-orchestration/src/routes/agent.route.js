@@ -20,6 +20,10 @@ console.log("Starting agent");
                 content: message
             }
         });
+        console.dir(
+  response.messages[response.messages.length - 1],
+  { depth: null }
+);
 
         console.log("Agent finished");
 

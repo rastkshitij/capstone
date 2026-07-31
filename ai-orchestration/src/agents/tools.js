@@ -25,14 +25,22 @@ export const listFiles = tool(
         console.log("=================================")
         console.log("Returning from listFiles");
 
-        return JSON.stringify(response.data.files);
+return response.data.files.join("\n");
     },
     {
         name: "list_files",
-        description: "List all the files in the project directory. This is useful for understanding what files are available to work with.",
+        description: `
+Returns the complete project file list.
+
+IMPORTANT:
+- This tool should normally be called only ONCE.
+- Never call this tool again if it has already returned a list.
+- Reuse the previous result.
+- If you know the target file, call read_files instead.
+`,
         schema: z.object({})
     }
-)
+);
 
 export const readFiles = tool(
     async ({ files }) => {
@@ -56,11 +64,14 @@ export const readFiles = tool(
         console.log("=================================")
         console.log("Returning from ReadFiles");
 
-        return JSON.stringify(response.data);
+        return files
+    .map(f => `${f.file}\n${f.content}`)
+    .join("\n\n");
     },
     {
         name: "read_files",
-        description: "...",
+        description:
+"Read the contents of one or more project files. Use this tool only when you need to inspect file contents before making changes. Do not call it again for the same file unless it has been modified.",
         schema: z.object({
             files: z.array(z.string())
         })
@@ -92,11 +103,15 @@ export const updateFiles = tool(
 
         console.log("Returning from updateFiles");
 
-        return JSON.stringify(response.data.results);
+       return [
+    "Updated src/App.jsx",
+    "Updated package.json"
+].join("\n");
     },
     {
         name: "update_files",
-        description: "Update the contents of specified files. This is useful for making changes to files based on the requirements of the task at hand. this tool can also use to create new files by providing a new file name in the file field and the content to be added in the content field.",
+        description:
+"Update or create project files. After this tool succeeds, do NOT call it again with the same content. Instead, provide a final response to the user.",
         schema: z.object({
             files: z.array(z.object({
                 file: z.string().describe("The absolute path of the file to update"),
