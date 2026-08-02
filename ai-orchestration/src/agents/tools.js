@@ -2,30 +2,38 @@ import axios from 'axios';
 import { tool } from "langchain"
 import * as z from "zod";
 
+const sandboxId = "019fae67-44ab-7571-8937-2e16810a6287";
 //list file tool 
+
 export const listFiles = tool(
     async ({ }) => {
-        console.log("=================================")
-        console.log("using list files tool")
-        console.log("=================================")
+        try {
+            console.log("=================================")
+            console.log("using list files tool")
+            console.log("=================================")
 
-        const response = await axios.get(
-            "http://localhost/list-files",
-            {
-                headers: {
-                    Host: "019fae67-44ab-7571-8937-2e16810a6287.agent.localhost"
+            const response = await axios.get(
+                "http://router-service/list-files",
+                {
+                    headers: {
+                        Host: `${sandboxId}.agent.localhost`
+                    }
                 }
-            }
-        );
+            );
 
+            console.log("=================================")
+            console.log("response from list files tool")
+            console.dir(response.data, { depth: null });
+            console.log("=================================")
+            console.log("Returning from listFiles");
 
-        console.log("=================================")
-        console.log("response from list files tool")
-        console.dir(response.data, { depth: null });
-        console.log("=================================")
-        console.log("Returning from listFiles");
-
-return response.data.files.join("\n");
+            return response.data.files.join("\n");
+        } catch (err) {
+            console.error("LIST FILE TOOL ERROR");
+            console.error(err);
+            console.error(err.response?.data);
+            throw err;
+        }
     },
     {
         name: "list_files",
@@ -44,34 +52,37 @@ IMPORTANT:
 
 export const readFiles = tool(
     async ({ files }) => {
+        try {
+            console.log("=================================")
+            console.log("using read files tool with files", files)
+            console.log("=================================")
 
-        console.log("=================================")
-        console.log("using read files tool with files", files)
-        console.log("=================================")
-
-        const response = await axios.get(
-            "http://localhost/read-files?files=" + files.join(","),
-            {
-                timeout: 10000,
-                headers: {
-                    Host: "019fae67-44ab-7571-8937-2e16810a6287.agent.localhost"
+            const response = await axios.get(
+                `http://router-service/read-files?files=${files.join(",")}`,
+                {
+                    headers: {
+                        Host: `${sandboxId}.agent.localhost`
+                    }
                 }
-            }
-        );
-        //clg 
-        console.log("=================================")
-        console.log("response from read files tool", response.data)
-        console.log("=================================")
-        console.log("Returning from ReadFiles");
+            );
+            //clg 
+            console.log("=================================")
+            console.log("response from read files tool", response.data)
+            console.log("=================================")
+            console.log("Returning from ReadFiles");
 
-        return files
-    .map(f => `${f.file}\n${f.content}`)
-    .join("\n\n");
+            return JSON.stringify(response.data.files);
+        } catch (err) {
+            console.error("READ FILE TOOL ERROR");
+            console.error(err);
+            console.error(err.response?.data);
+            throw err;
+        }
     },
     {
         name: "read_files",
         description:
-"Read the contents of one or more project files. Use this tool only when you need to inspect file contents before making changes. Do not call it again for the same file unless it has been modified.",
+            "Read the contents of one or more project files. Use this tool only when you need to inspect file contents before making changes. Do not call it again for the same file unless it has been modified.",
         schema: z.object({
             files: z.array(z.string())
         })
@@ -80,41 +91,63 @@ export const readFiles = tool(
 
 export const updateFiles = tool(
     async ({ files }) => {
+        try {
+            console.log("=================================")
+            console.log("using update files tool with files", files)
+            console.log("=================================")
+            console.log("updateFiles started");
+            const normalizedFiles = files.map(file => ({
+                ...file,
+                file: file.file.replace(/^\/+/, "")
+            }));
 
-        console.log("=================================")
-        console.log("using update files tool with files", files)
-        console.log("=================================")
-        console.log("updateFiles started");
-        const response = await axios.patch(
-            "http://localhost/update-files",
-            {
-                updates: files
-            },
-            {
-                headers: {
-                    Host: "019fae67-44ab-7571-8937-2e16810a6287.agent.localhost"
+            const response = await axios.patch(
+                "http://router-service/update-files",
+                {
+                    updates: normalizedFiles
+                },
+                {
+                    headers: {
+                        Host: `${sandboxId}.agent.localhost`
+                    }
                 }
-            }
-        );
-        console.log("updateFiles completed")
-        console.log("=================================")
-        console.log("response from update files tool", response.data)
-        console.log("=================================")
+            );
+            console.log("updateFiles completed")
+            console.log("=================================")
+            console.log("response from update files tool", response.data)
+            console.log("=================================")
 
-        console.log("Returning from updateFiles");
+            console.log("Returning from updateFiles");
 
-       return [
-    "Updated src/App.jsx",
-    "Updated package.json"
-].join("\n");
+            return response.data.results
+                .map(obj => {
+                    const [file, status] = Object.entries(obj)[0];
+                    return `${file}: ${status}`;
+                })
+                .join("\n");
+        } catch (err) {
+            console.error("UPDATE FILE TOOL ERROR");
+            console.error(err);
+            console.error(err.response?.data);
+            throw err;
+        }
     },
     {
         name: "update_files",
         description:
-"Update or create project files. After this tool succeeds, do NOT call it again with the same content. Instead, provide a final response to the user.",
+            "Update or create project files. After this tool succeeds, do NOT call it again with the same content. Instead, provide a final response to the user.",
         schema: z.object({
             files: z.array(z.object({
-                file: z.string().describe("The absolute path of the file to update"),
+                file: z.string().describe(`
+Relative file path inside the project.
+
+Examples:
+src/App.jsx
+src/index.css
+package.json
+
+Never use an absolute path beginning with "/".
+`),
                 content: z.string().describe("The new content for the file, the content should support json format.")
             })).describe("The list of files to update and their new contents")
         })

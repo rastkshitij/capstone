@@ -38,7 +38,9 @@ Guidelines:
 
 When the task is finished, stop.
 `
-});
+}).withConfig({
+  recursionLimit: 100,
+})
 
 export default agent
 
