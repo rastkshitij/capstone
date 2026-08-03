@@ -6,7 +6,7 @@ const sandboxId = "019fae67-44ab-7571-8937-2e16810a6287";
 //list file tool 
 
 export const listFiles = tool(
-    async ({ }) => {
+    async ({ } , config) => {
         try {
             console.log("=================================")
             console.log("using list files tool")
@@ -16,7 +16,7 @@ export const listFiles = tool(
                 "http://router-service/list-files",
                 {
                     headers: {
-                        Host: `${sandboxId}.agent.localhost`
+                        Host: `${config.context.projectId}.agent.localhost`
                     }
                 }
             );
@@ -51,7 +51,7 @@ IMPORTANT:
 );
 
 export const readFiles = tool(
-    async ({ files }) => {
+    async ({ files } , config) => {
         try {
             console.log("=================================")
             console.log("using read files tool with files", files)
@@ -61,7 +61,7 @@ export const readFiles = tool(
                 `http://router-service/read-files?files=${files.join(",")}`,
                 {
                     headers: {
-                        Host: `${sandboxId}.agent.localhost`
+                        Host: `${config.context.projectId}.agent.localhost`
                     }
                 }
             );
@@ -90,7 +90,7 @@ export const readFiles = tool(
 );
 
 export const updateFiles = tool(
-    async ({ files }) => {
+    async ({ files } , config) => {
         try {
             console.log("=================================")
             console.log("using update files tool with files", files)
@@ -108,7 +108,7 @@ export const updateFiles = tool(
                 },
                 {
                     headers: {
-                        Host: `${sandboxId}.agent.localhost`
+                        Host: `${config.context.projectId}.agent.localhost`
                     }
                 }
             );

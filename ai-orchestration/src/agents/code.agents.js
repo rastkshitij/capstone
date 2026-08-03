@@ -2,6 +2,7 @@ import "dotenv/config";
 import { ChatMistralAI } from "@langchain/mistralai"
 import { listFiles, readFiles, updateFiles } from "./tools.js";
 import { createAgent } from "langchain";
+import * as z from "zod";
 
 const model = new ChatMistralAI({
     model: "mistral-small-latest",
@@ -10,7 +11,10 @@ const model = new ChatMistralAI({
 })
 const agent = createAgent({
   model,
-  tools: [listFiles, readFiles, updateFiles],
+  tools: [listFiles, readFiles, updateFiles], 
+    contextSchema: z.object({
+        projectId: z.string(),
+    }),
   systemPrompt: `
 You are an expert frontend developer working inside a Vite project.
 
