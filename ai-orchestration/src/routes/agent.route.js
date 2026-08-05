@@ -14,18 +14,21 @@ const { message, projectId } = req.body;
 console.log(projectId)
 console.log(message);
 console.log("Starting agent");
-
-const response = await agent.invoke({
-    messages: [
-        {
-            role: "user",
-            content: message
-        }
-    ],
-    context: {
-        projectId
+const response = await agent.invoke(
+    {
+        messages: [
+            {
+                role: "user",
+                content: message,
+            },
+        ],
+    },
+    {
+        context: {
+            projectId,
+        },
     }
-});
+);
 console.dir(
     response.messages[response.messages.length - 1],
     { depth: null }
