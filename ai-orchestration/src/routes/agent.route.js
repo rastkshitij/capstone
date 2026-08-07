@@ -14,7 +14,7 @@ const { message, projectId } = req.body;
 console.log(projectId)
 console.log(message);
 console.log("Starting agent");
-const response = await agent.invoke(
+const response = await agent.stream(
     {
         messages: [
             {
@@ -26,14 +26,18 @@ const response = await agent.invoke(
     {
         context: {
             projectId,
-        },
-    }
+        }, 
+        streamMode: "custom",
+    } 
 );
 console.dir(
     response.messages[response.messages.length - 1],
     { depth: null }
 );
-
+for await (const chunk of response.stream) {
+   console.log("Chunk received: ", chunk);
+   res.write(chunk);
+}
 console.log("Agent finished");
 
 res.status(200).json({

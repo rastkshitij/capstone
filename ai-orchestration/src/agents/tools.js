@@ -7,11 +7,15 @@ const sandboxId = "019fae67-44ab-7571-8937-2e16810a6287";
 
 export const listFiles = tool(
     async ({ } , config) => {
+        
         try {
             console.log("=================================")
             console.log("using list files tool")
             console.log("=================================")
-
+        const writer = config.writer;
+        writer("=================================\n");
+        writer("using list files tool\n");
+        writer("=================================\n");
             const response = await axios.get(
                 "http://router-service/list-files",
                 {
@@ -20,6 +24,11 @@ export const listFiles = tool(
                     }
                 }
             );
+            writer("=================================\n");
+            writer("response from list files tool\n");
+            writer(JSON.stringify(response.data, null, 2) + "\n");
+            writer("=================================\n");
+            writer("Returning from listFiles\n");
 
             console.log("=================================")
             console.log("response from list files tool")
@@ -53,6 +62,10 @@ IMPORTANT:
 export const readFiles = tool(
     async ({ files } , config) => {
         try {
+            const writer = config.writer;
+            writer("=================================\n");
+            writer("using read files tool with files: " + JSON.stringify(files) + "\n");
+            writer("=================================\n");
             console.log("=================================")
             console.log("using read files tool with files", files)
             console.log("=================================")
@@ -65,7 +78,11 @@ export const readFiles = tool(
                     }
                 }
             );
-            //clg 
+           writer("=================================\n");
+            writer("response from read files tool\n");
+            writer(JSON.stringify(response.data, null, 2) + "\n");
+            writer("=================================\n");
+            writer("Returning from ReadFiles\n"); 
             console.log("=================================")
             console.log("response from read files tool", response.data)
             console.log("=================================")
@@ -92,6 +109,9 @@ export const readFiles = tool(
 export const updateFiles = tool(
     async ({ files } , config) => {
         try {
+            const writer = config.writer;
+            writer("=================================\n");
+            writer("using update files tool with files: " + JSON.stringify(files) + "\n");
             console.log("=================================")
             console.log("using update files tool with files", files)
             console.log("=================================")
@@ -112,6 +132,12 @@ export const updateFiles = tool(
                     }
                 }
             );
+
+            writer("=================================\n");
+            writer("response from update files tool\n");
+            writer(JSON.stringify(response.data, null, 2) + "\n");
+            writer("=================================\n");
+            writer("Returning from updateFiles\n");
             console.log("updateFiles completed")
             console.log("=================================")
             console.log("response from update files tool", response.data)

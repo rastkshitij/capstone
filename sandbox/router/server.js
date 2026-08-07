@@ -1,6 +1,8 @@
+import http from "http";
 import app from "./src/app.js";
 
+const server = http.createServer(app);
 
-app.listen(3000, () => { 
-    console.log("Sandbox router is running port 3000")
-})
+server.listen(3000, () => {
+    console.log("Sandbox router is running on port 3000");
+});
