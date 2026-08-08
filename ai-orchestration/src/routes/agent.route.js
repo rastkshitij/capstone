@@ -7,52 +7,50 @@ agentRouter.post("/invoke", async (req, res) => {
 
     console.log("Request received");
 
-
     try {
 
-const { message, projectId } = req.body;
-console.log(projectId)
-console.log(message);
-console.log("Starting agent");
-const response = await agent.stream(
-    {
-        messages: [
-            {
-                role: "user",
-                content: message,
-            },
-        ],
-    },
-    {
-        context: {
-            projectId,
-        }, 
-        streamMode: "custom",
-    } 
-);
-console.dir(
-    response.messages[response.messages.length - 1],
-    { depth: null }
-);
-for await (const chunk of response.stream) {
-   console.log("Chunk received: ", chunk);
-   res.write(chunk);
-}
-console.log("Agent finished");
+        const { message, projectId } = req.body;
 
-res.status(200).json({
-    response
-});
+        console.log("Starting agent");
+        const response = await agent.stream(
+            {
+                messages: [
+                    {
+                        role: "user",
+                        content: message,
+                    },
+                ],
+            },
+            {
+                context: {
+                    projectId,
+                },
+                streamMode: "custom",
+            }
+        );
+        console.dir(
+            response.messages[response.messages.length - 1],
+            { depth: null }
+        );
+        for await (const chunk of response.stream) {
+            console.log("Chunk received: ", chunk);
+            res.write(chunk);
+        }
+        console.log("Agent finished");
+
+        res.status(200).json({
+            response
+        });
 
     } catch (err) {
 
-    console.error(err);
+        console.error(err);
 
-    res.status(500).json({
-        error: err.message
-    });
+        res.status(500).json({
+            error: err.message
+        });
 
-}
+    }
 
 });
 
