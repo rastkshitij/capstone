@@ -10,47 +10,56 @@ agentRouter.post("/invoke", async (req, res) => {
     try {
 
         const { message, projectId } = req.body;
-
-        console.log("Starting agent");
-        const response = await agent.stream(
-            {
-                messages: [
-                    {
-                        role: "user",
-                        content: message,
-                    },
-                ],
-            },
-            {
-                context: {
-                    projectId,
-                },
-                streamMode: "custom",
-            }
-        );
-        console.dir(
-            response.messages[response.messages.length - 1],
-            { depth: null }
-        );
-        for await (const chunk of response.stream) {
-            console.log("Chunk received: ", chunk);
-            res.write(chunk);
-        }
-        console.log("Agent finished");
-
-        res.status(200).json({
-            response
+        res.writeHead(200, {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
         });
 
-    } catch (err) {
+        console.log("Starting agent");
+const response = await agent.stream(
+    {
+        messages: [
+            {
+                role: "user",
+                content: message,
+            },
+        ],
+    },
+    {
+        context: {
+            projectId,
+        },
+        streamMode: "custom",
+    }
+);
 
-        console.error(err);
+for await (const chunk of response) {
+    console.log("Chunk received:", chunk);
 
+    res.write(
+        `data: ${JSON.stringify(chunk)}\n\n`
+    );
+}
+
+console.log("Agent finished");
+
+res.end();
+
+    }  catch (err) {
+    console.error(err);
+
+    if (!res.headersSent) {
         res.status(500).json({
             error: err.message
         });
-
+    } else {
+        res.write(`event: error\ndata: ${JSON.stringify({
+            error: err.message
+        })}\n\n`);
+        res.end();
     }
+}
 
 });
 

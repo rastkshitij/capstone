@@ -30,7 +30,7 @@ function getProxy(sandboxId) {
     if (!proxies[sandboxId]) {
         proxies[sandboxId] = createProxyMiddleware({
             target,
-            changeOrigin: true, ws: true
+             changeOrigin: false, ws: true
         })
     }
     return proxies[sandboxId]

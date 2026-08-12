@@ -11,6 +11,7 @@ app.use(express.json())
 
 app.get('/api/status/health', (req , res) =>{
     console.log("Version changed");
+    console.log(process.env.MISTRAL_API_KEY);
     res.status(200).json({
         status: "ok"
     })

@@ -6,7 +6,7 @@ import * as z from "zod";
 
 const model = new ChatMistralAI({
     model: "mistral-small-latest",
-    apiKey: process.env.MISTRALAI_API_KEY,
+    apiKey: process.env.MISTRAL_API_KEY,
     "temperature": 0.7,
 })
 const agent = createAgent({
