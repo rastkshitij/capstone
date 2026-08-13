@@ -2,9 +2,23 @@ import express from 'express';
 import morgan from 'morgan';
 import fs from 'fs'
 import path from 'path';
+import { Server } from 'socket.io';
+import http from 'http';
+import pty from 'node-pty';
+import os from 'os';
 const WORK_DIR = '/workspace'
 
 const app = express();
+
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PATCH"]
+    }
+
+})
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -16,6 +30,32 @@ app.get('/', (req, res) => {
     })
 })
 
+const shell = process.env.SHELL || "bash";
+const ptyProcess = pty.spawn(shell, [], {
+    name: 'xterm-color',
+    cols: 80,
+    rows: 30,
+    cwd: "/workspace",
+    env: process.env
+});
+
+ptyProcess.on('data', function (data) {
+    io.emit('terminal-output', data);
+});
+
+ptyProcess.onExit(({ exitCode, signal }) => {
+    console.log(`Terminal process exited with code ${exitCode} and signal ${signal}`);
+});
+
+io.on('connection', (socket) => {
+    console.log(`a user connected with id ${socket.id}`);
+    socket.on('terminal-input', (data) => {
+        ptyProcess.write(data);
+    });
+    socket.on('disconnect', () => {
+        console.log(`user with id ${socket.id} disconnected`);
+    })
+})
 
 //this api list files 
 app.get('/list-files', async (req, res) => {
@@ -91,7 +131,7 @@ app.get("/read-files", async (req, res) => {
 
 // patch api for updating files content of the files
 app.patch('/update-files', async (req, res) => {
-     console.log("===== UPDATE FILES CALLED =====");
+    console.log("===== UPDATE FILES CALLED =====");
     const updates = req.body.updates;
     if (!updates || !Array.isArray(updates)) {
         return res.status(400).json(
@@ -122,7 +162,7 @@ app.patch('/update-files', async (req, res) => {
     res.status(200).json({
         message: 'Files updated results',
         results,
-        status : "success"
+        status: "success"
     })
 });
 
@@ -171,4 +211,4 @@ app.post("/create-files", async (req, res) => {
     });
 });
 
-export default app;
+export default httpServer;

@@ -33,7 +33,7 @@ function getProxy(sandboxId) {
              changeOrigin: false, ws: true
         })
     }
-    return proxies[sandboxId]
+    return proxies[sandboxId] 
 }
 
 function getAgentProxy(sandboxId) {
