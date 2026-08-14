@@ -24,16 +24,18 @@ app.use(morgan("combined"));
 const proxies = {}
 const agentProxies = {}
 
-function getProxy(sandboxId) {
-    const target = `http://sandbox-service-${sandboxId}`;
+function getAgentProxy(sandboxId) {
+    const target = `http://sandbox-service-${sandboxId}:3000`;
 
-    if (!proxies[sandboxId]) {
-        proxies[sandboxId] = createProxyMiddleware({
+    if (!agentProxies[sandboxId]) {
+        agentProxies[sandboxId] = createProxyMiddleware({
             target,
-             changeOrigin: false, ws: true
-        })
+            changeOrigin: true,
+            ws: true
+        });
     }
-    return proxies[sandboxId] 
+
+    return agentProxies[sandboxId];
 }
 
 function getAgentProxy(sandboxId) {
@@ -69,4 +71,5 @@ app.use((req, res, next) => {
 })
 
 
+export { getAgentProxy };
 export default app;
