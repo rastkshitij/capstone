@@ -4,6 +4,17 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 
 const app = express();
 
+// Inject CORS headers for all proxied traffic (handles preflight too)
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(204);
+    }
+    next();
+});
+
 app.get("/api/status/healthz", (req, res) => {
     res.status(200).json({
         status: "ok",
@@ -74,4 +85,4 @@ app.use((req, res, next) => {
 });
 
 export { getAgentProxy };
-export default app;
+export default app;

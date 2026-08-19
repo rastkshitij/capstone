@@ -1,5 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 import fs from 'fs'
 import path from 'path';
 import { Server } from 'socket.io';
@@ -9,6 +10,13 @@ import os from 'os';
 const WORK_DIR = '/workspace'
 
 const app = express();
+
+// Allow cross-origin requests from the React frontend
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {

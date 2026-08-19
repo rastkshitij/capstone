@@ -1,9 +1,18 @@
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 import { createPod } from './kubernetes/pod.js';
 import { createService } from './kubernetes/service.js';
 import {v7 as uuid} from 'uuid';
 const app = express();
+
+// Allow requests from the React frontend (and any other origin in dev)
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
