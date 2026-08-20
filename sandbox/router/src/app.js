@@ -15,6 +15,9 @@ app.use((req, res, next) => {
     next();
 });
 
+// GET /api/status/healthz
+// Description: Health check endpoint for readiness probes (Kubernetes compatibility)
+// Returns: JSON object with status "ok" and a message indicating router is healthy
 app.get("/api/status/healthz", (req, res) => {
     res.status(200).json({
         status: "ok",
@@ -22,6 +25,9 @@ app.get("/api/status/healthz", (req, res) => {
     });
 });
 
+// GET /api/status/readyz
+// Description: Readiness check endpoint for Kubernetes readiness probes
+// Returns: JSON object with status "ready" and a message indicating router is ready to handle traffic
 app.get("/api/status/readyz", (req, res) => {
     res.status(200).json({
         status: "ready",

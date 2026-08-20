@@ -24,7 +24,9 @@ export const getPreviewUrl = (sandboxId) => {
 
 /**
  * Checks management server health
- * GET /api/sandbox/health
+ * Route: GET /api/sandbox/health
+ * Description: Verifies that the Sandbox Management server is running and healthy
+ * @returns {Promise<{status: string, message: string}>} Health status response
  */
 export async function checkSandboxHealth() {
   try {
@@ -39,8 +41,10 @@ export async function checkSandboxHealth() {
 
 /**
  * Creates/Starts a new Sandbox
- * POST /api/sandbox/start
- * @returns {Promise<{sandboxId: string, previewUrl: string, message: string}>}
+ * Route: POST /api/sandbox/start
+ * Description: Initiates creation of a new sandbox environment with Kubernetes pods and services
+ * Response includes unique sandboxId, preview URL, and status message
+ * @returns {Promise<{sandboxId: string, previewUrl: string, message: string, isMock?: boolean}>}
  */
 export async function startSandbox() {
   try {
@@ -77,7 +81,10 @@ export async function startSandbox() {
 
 /**
  * Lists all files in sandbox workspace
- * GET /list-files
+ * Route: GET /list-files
+ * Description: Retrieves a list of all files available in the sandbox's workspace directory
+ * @param {string} sandboxId - The unique identifier of the sandbox
+ * @returns {Promise<string[]>} Array of file paths in the sandbox
  */
 export async function listSandboxFiles(sandboxId) {
   const agentUrl = getAgentBaseUrl(sandboxId);
@@ -94,9 +101,12 @@ export async function listSandboxFiles(sandboxId) {
 
 /**
  * Reads content of specified files
- * GET /read-files?files=src/App.jsx,package.json
- * @param {string} sandboxId
- * @param {string[]} filePaths
+ * Route: GET /read-files
+ * Description: Retrieves content of one or more files from the sandbox workspace
+ * Query Parameter: files=src/App.jsx,package.json (comma-separated file paths)
+ * @param {string} sandboxId - The unique identifier of the sandbox
+ * @param {string[]} filePaths - Array of file paths to read
+ * @returns {Promise<Object>} Map of file paths to their contents
  */
 export async function readSandboxFiles(sandboxId, filePaths) {
   if (!filePaths || filePaths.length === 0) return {};
@@ -127,9 +137,12 @@ export async function readSandboxFiles(sandboxId, filePaths) {
 
 /**
  * Updates content of existing files
- * PATCH /update-files
- * @param {string} sandboxId
- * @param {Array<{file: string, content: string}>} updates
+ * Route: PATCH /update-files
+ * Description: Modifies content of one or more existing files in the sandbox workspace
+ * Request Body: { updates: [{ file: "path/to/file", content: "new content" }] }
+ * @param {string} sandboxId - The unique identifier of the sandbox
+ * @param {Array<{file: string, content: string}>} updates - Array of file updates
+ * @returns {Promise<Object>} Response with update status
  */
 export async function updateSandboxFiles(sandboxId, updates) {
   const agentUrl = getAgentBaseUrl(sandboxId);
@@ -156,9 +169,12 @@ export async function updateSandboxFiles(sandboxId, updates) {
 
 /**
  * Creates new files inside sandbox
- * POST /create-files
- * @param {string} sandboxId
- * @param {Array<{file: string, content: string}>} files
+ * Route: POST /create-files
+ * Description: Creates one or more new files in the sandbox workspace with specified content
+ * Request Body: { files: [{ file: "path/to/file", content: "file content" }] }
+ * @param {string} sandboxId - The unique identifier of the sandbox
+ * @param {Array<{file: string, content: string}>} files - Array of files to create
+ * @returns {Promise<Object>} Response with creation status
  */
 export async function createSandboxFiles(sandboxId, files) {
   const agentUrl = getAgentBaseUrl(sandboxId);

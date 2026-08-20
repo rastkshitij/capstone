@@ -17,6 +17,9 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 
+// GET /api/sandbox/health
+// Description: Health check endpoint to verify Sandbox Server is running and healthy
+// Returns: JSON object with status 'ok' and a message indicating the server is healthy
 app.get('/api/sandbox/health' ,  (req , res)=>{
     res.status(200).json({
         status: 'ok',
@@ -25,6 +28,10 @@ app.get('/api/sandbox/health' ,  (req , res)=>{
     })
 })
 
+// POST /api/sandbox/start
+// Description: Creates and starts a new sandbox environment with a unique ID
+// Functionality: Generates a UUID, creates a pod and service in Kubernetes, and returns sandbox details
+// Returns: JSON with sandboxId, previewUrl, and success message; Error response if creation fails
 console.log("Registering POST /api/sandbox/start");
 app.post('/api/sandbox/start', async (req, res) => {
     try {
