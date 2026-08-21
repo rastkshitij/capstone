@@ -3,11 +3,12 @@ kind: Ingress
 metadata:
   name: codespace-ingress
   annotations:
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "6000"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "6000"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "6000"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "6000"
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-name: route
   labels:
     app.kubernetes.io/name: codespace-ingress
 
